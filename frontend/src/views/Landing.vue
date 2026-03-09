@@ -72,8 +72,8 @@
     </div>
 
     <section ref="formRef" class="form-section">
-      <div class="form-panel" :style="formRevealStyle">
-        <a-form :model="formData" layout="vertical" @finish="handleSubmit">
+      <div class="form-panel" :style="[formRevealStyle, { minHeight: panelHeight === 'auto' ? 'auto' : panelHeight + 'px' }]" ref="panelRef">
+        <a-form v-show="!loading" :model="formData" layout="vertical" @finish="handleSubmit">
           <div class="step">
             <div class="step-head">
               <span>01</span>
@@ -208,14 +208,62 @@
               </span>
             </button>
           </a-form-item>
-
-          <div v-if="loading" class="progress">
-            <div class="progress-track">
-              <div class="progress-fill" :style="{ width: `${loadingProgress}%` }"></div>
-            </div>
-            <p>{{ loadingStatus }}</p>
-          </div>
         </a-form>
+
+        <!-- Node Loading Stepper -->
+        <div v-show="loading" class="stepper-wrapper">
+          <div class="stepper-header">
+            <h2 class="stepper-title">{{ t('home.loading.planCode', { code: planCode }) }}</h2>
+            <p class="stepper-subtitle">{{ t('home.loading.preparing') }}</p>
+          </div>
+          
+          <div class="stepper-container">
+            <!-- Step 1: Searching Attractions -->
+            <div class="step-node" :class="{ active: loadingProgress >= 0 && loadingProgress <= 30, completed: loadingProgress > 30 }">
+              <div class="node-icon">
+                <i v-if="loadingProgress >= 0 && loadingProgress <= 30" class="spinner-small"></i>
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <p class="node-text">{{ t('home.loading.searchingAttractions') }}</p>
+            </div>
+            <div class="step-divider" :class="{ completed: loadingProgress > 30 }"></div>
+
+            <!-- Step 2: Weather -->
+            <div class="step-node" :class="{ active: loadingProgress > 30 && loadingProgress <= 50, completed: loadingProgress > 50 }">
+              <div class="node-icon">
+                <i v-if="loadingProgress > 30 && loadingProgress <= 50" class="spinner-small"></i>
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a5.5 5.5 0 0 0-11-1.5A5 5 0 0 0 8 8a9 9 0 0 1 15 3.5 5 5 0 0 0-5.5 7.5z"></path></svg>
+              </div>
+              <p class="node-text">{{ t('home.loading.queryingWeather') }}</p>
+            </div>
+            <div class="step-divider" :class="{ completed: loadingProgress > 50 }"></div>
+
+            <!-- Step 3: Hotels -->
+            <div class="step-node" :class="{ active: loadingProgress > 50 && loadingProgress <= 70, completed: loadingProgress > 70 }">
+              <div class="node-icon">
+                <i v-if="loadingProgress > 50 && loadingProgress <= 70" class="spinner-small"></i>
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              </div>
+              <p class="node-text">{{ t('home.loading.recommendingHotels') }}</p>
+            </div>
+            <div class="step-divider" :class="{ completed: loadingProgress > 70 }"></div>
+
+            <!-- Step 4: Planning -->
+            <div class="step-node" :class="{ active: loadingProgress > 70 && loadingProgress < 100, completed: loadingProgress >= 100 }">
+              <div class="node-icon">
+                <i v-if="loadingProgress > 70 && loadingProgress < 100" class="spinner-small"></i>
+                <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              </div>
+              <p class="node-text">{{ t('home.loading.generatingPlan') }}</p>
+            </div>
+          </div>
+          
+          <div class="stepper-footer">
+            <h3>{{ loadingStatus }}</h3>
+            <p v-if="loadingProgress < 100">{{ t('home.loading.workingTogether') }}</p>
+            <p v-else>{{ t('home.loading.donePrepare') }}</p>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -243,7 +291,10 @@ const loadingProgress = ref(0)
 const loadingStatus = ref('')
 const scrollY = ref(0)
 const formRef = ref<HTMLElement | null>(null)
+const panelRef = ref<HTMLElement | null>(null)
+const panelHeight = ref<number | string>('auto')
 const fogEnabled = ref(true)
+const planCode = ref(`PLAN${Math.floor(100000 + Math.random() * 900000)}`)
 
 const interestOptions = [
   { value: '历史文化', labelKey: 'home.interests.history' },
@@ -362,9 +413,14 @@ const handleSubmit = async () => {
     return
   }
 
+  if (panelRef.value) {
+    panelHeight.value = panelRef.value.offsetHeight
+  }
+
   loading.value = true
   loadingProgress.value = 0
   loadingStatus.value = t('home.loading.initializing')
+  planCode.value = `${Math.floor(1000 + Math.random() * 9000)}`
 
   const progressInterval = setInterval(() => {
     if (loadingProgress.value < 90) {
@@ -409,6 +465,7 @@ const handleSubmit = async () => {
       loading.value = false
       loadingProgress.value = 0
       loadingStatus.value = ''
+      panelHeight.value = 'auto'
     }, 1000)
   }
 }
@@ -958,30 +1015,150 @@ const handleSubmit = async () => {
   animation: spin 0.8s linear infinite;
 }
 
-.progress {
-  margin-top: 14px;
+.spinner-small {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(215, 110, 66, 0.24);
+  border-top-color: #d76e42;
+  animation: spin 0.8s linear infinite;
 }
 
-.progress-track {
-  width: 100%;
-  height: 6px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: rgba(236, 243, 250, 0.14);
-}
-
-.progress-fill {
+/* 节点动画相关样式 */
+.stepper-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  background: linear-gradient(90deg, #f0946b 0%, #d76e42 45%, #b44d28 100%);
-  transition: width 0.35s ease;
+  min-height: 480px;
+  animation: fadeIn 0.4s ease;
+  padding: 30px 20px;
+  box-sizing: border-box;
 }
 
-.progress p {
-  margin: 10px 0 0;
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stepper-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.stepper-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.stepper-subtitle {
+  font-size: 15px;
+  color: rgba(236, 243, 250, 0.54);
+}
+
+.stepper-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto 50px auto;
+}
+
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  z-index: 2;
+}
+
+.node-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(14, 27, 38, 0.8);
+  border: 1.5px solid rgba(236, 243, 250, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: rgba(236, 243, 250, 0.4);
+  transition: all 0.35s ease;
+}
+
+.step-node.active .node-icon {
+  border-color: #d76e42;
+  background: rgba(215, 110, 66, 0.14);
+  color: #d76e42;
+  box-shadow: 0 0 16px rgba(215, 110, 66, 0.25);
+}
+
+.step-node.completed .node-icon {
+  background: #d76e42;
+  border-color: #d76e42;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(215, 110, 66, 0.3);
+}
+
+.node-text {
   font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(236, 243, 250, 0.8);
+  font-weight: 600;
+  color: rgba(236, 243, 250, 0.4);
+  text-align: center;
+  transition: color 0.35s ease;
+  line-height: 1.3;
+}
+
+.step-node.active .node-text {
+  color: #d76e42;
+}
+
+.step-node.completed .node-text {
+  color: rgba(236, 243, 250, 0.85);
+}
+
+.step-divider {
+  flex: 1;
+  height: 3px;
+  background: rgba(236, 243, 250, 0.08);
+  margin-top: 25px; /* (52px / 2) - 1.5px */
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.step-divider::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0; width: 0%;
+  background: #d76e42;
+  transition: width 0.45s ease;
+}
+
+.step-divider.completed::after {
+  width: 100%;
+}
+
+.stepper-footer {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.stepper-footer h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #d76e42;
+  margin-bottom: 8px;
+}
+
+.stepper-footer p {
+  font-size: 14px;
+  color: rgba(236, 243, 250, 0.54);
 }
 
 :deep(.ant-form-item-label > label) {

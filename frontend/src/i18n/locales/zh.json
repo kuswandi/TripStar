@@ -87,6 +87,10 @@
       "queryingWeather": "正在查询天气...",
       "recommendingHotels": "正在推荐酒店...",
       "generatingPlan": "正在生成行程计划...",
+      "planCode": "计划编号 {code}",
+      "preparing": "请稍等，正在为您准备...",
+      "workingTogether": "AI 正在齐心协力为您定制旅程...",
+      "donePrepare": "完成！准备出发...",
       "done": "完成！"
     },
     "messages": {

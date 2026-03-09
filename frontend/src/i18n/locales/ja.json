@@ -87,6 +87,10 @@
       "queryingWeather": "天気を確認中...",
       "recommendingHotels": "ホテルを推薦中...",
       "generatingPlan": "旅程を生成中...",
+      "planCode": "プラン番号 {code}",
+      "preparing": "少々お待ちください。準備中です...",
+      "workingTogether": "AIエージェントが協力して旅程を作成しています...",
+      "donePrepare": "完了！出発の準備をしてください...",
       "done": "完了！"
     },
     "messages": {

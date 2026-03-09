@@ -87,6 +87,10 @@
       "queryingWeather": "Checking weather...",
       "recommendingHotels": "Recommending hotels...",
       "generatingPlan": "Generating itinerary...",
+      "planCode": "PLAN CODE {code}",
+      "preparing": "Please wait, we are preparing for you...",
+      "workingTogether": "Our AI agents are working together to craft your journey...",
+      "donePrepare": "Done! Prepare for departure...",
       "done": "Done!"
     },
     "messages": {

